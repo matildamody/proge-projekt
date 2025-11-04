@@ -1,2 +1,55 @@
-hello
-fjnfjg
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk # PIL = pilte töötlev teek, avab pildifaili, muudab pildi tkinteris kuvamiseks sobivaks
+import random, json, os
+praegune_kategooria = None
+praegune_nimi = None
+õige_vastus = 0
+vale_vastus = 0
+
+f = open("andmed/nimed.json", "r", encoding ="utf-8")
+nimed = json.load(f) # muudab jsoni pythonile arusaadavaks
+
+root = tk.Tk() # avab akna
+root.title("Eesti kuulsuste äraarvamismäng")
+manguaeg = 120
+root.after(manguaeg * 1000, lopeta_mang)
+
+def vali_kategooria(kategooria):
+    global praegune_kategooria
+    praegune_kategooria = kategooria
+    kuva_juhuslik_pilt()
+    
+def kuva_juhuslik_pilt():
+    global praegune_nimi, pilt, sisestus
+    kaust = os.path.join("andmed", praegune_kategooria)
+    fail = random.choice(list(andmed[praegune_kategooria].keys()))
+    õige_nimi = andmed[praegune_kategooria][fail]
+    praegune_nimi = õige_nimi
+
+    pilt = Image.open(os.path.join(kaust, fail))
+    foto = ImageTk.PhotoImage(pilt)
+    pilt_Label.config(image=foto) #pilt ekraanile
+    pilt_Label.image = foto #pilt ekraanile
+    
+    sisestus.delete(0, tk.END) # kustutab eelmise vastuse
+
+def kontrolli_vastust():
+    global õige_vastus, vale_vastus
+    vastus = sisestus.get().strip()
+    if vastus.lower() == current_name.lower():
+        õige_vastus += 1
+        messagebox.showinfo("Õige!")
+    else:
+        vale_vastus += 1
+        messagebox.showinfo(f"Vale! Õige nimi on {praegune_nimi}") # vb asendada showinfo showerroriga
+    kuva_juhuslik_pilt()
+    
+def lopeta_mang():
+    messagebox.showinfo("Tulemused", f"Õigeid vastuseid: {õige_vastus}\nValesid vastuseid: {vale_vastus}")
+    root.destroy() # sulgeb tkinteri akna
+        
+f.close()   
+    
+root.mainloop() # hoiab akna avatud 
+
