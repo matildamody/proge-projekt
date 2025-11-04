@@ -1,1 +1,9 @@
-
+Start mäng
+ └── vali kategooria
+      ├── laadi andmed failist
+      ├── vali juhuslik kuulsus
+      ├── kuva pilt
+      ├── küsi vastus
+      ├── kontrolli vastus
+      └── uuenda punkte
+Lõpus: näita tulemus + soovitused
