@@ -1,0 +1,137 @@
+import random, json, os, pygame, sys, requests, io
+from PIL import Image
+
+# andmete avamine
+with open("andmed/nimed.json", "r", encoding="utf-8") as f:
+    andmed = json.load(f)
+
+# muutujad
+kategooriad = list(andmed.keys())
+praegune_fail = None
+praegune_kategooria = None
+praegune_nimi = None
+õige_vastus = 0
+vale_vastus = 0
+sisend = ""
+algusaeg = None
+mangu_algus = False
+running = True
+
+# pygame algus
+pygame.init()
+aken = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Eesti kuulsuste äraarvamismäng")
+font = pygame.font.SysFont("Arial", 30)
+väike_font = pygame.font.SysFont("Arial", 20)
+clock = pygame.time.Clock()
+
+# kategooriate nupud
+nupud = []
+for i, kat in enumerate(kategooriad): # võtab andmetest kategooriad
+    x = 50
+    y = 100 + i * 60 # nuppudel 60 pikslit vahet
+    w = 200
+    h = 50
+    nupud.append((kat, x, y, w, h))
+
+
+def kuva_juhuslik_pilt():
+    # valib juhusliku pildi valitd (aktiivsest) kategooriast ja tagastab pildina
+    global praegune_fail, praegune_nimi
+    praegune_fail = random.choice(list(andmed[praegune_kategooria].keys()))
+    praegune_nimi = andmed[praegune_kategooria][praegune_fail]
+
+    # pildi laadimine internetist, sest meil URL-id 
+    try:
+        response = requests.get(praegune_fail)
+        image_bytes = io.BytesIO(response.content)
+        pil_img = Image.open(image_bytes).convert("RGB")
+        pil_img = pil_img.resize((400, 400))
+        pil_img.save("temp.jpg")  # ajutine fail pygame'i jaoks
+        pilt = pygame.image.load("temp.jpg")
+        return pilt
+    except Exception as e:
+        print("Pildi laadimine ebaõnnestus:", e)
+        return None
+
+# kategooriate nuppude kuvamine
+def joonista_nupud():
+    for kat, x, y, w, h in nupud:
+        pygame.draw.rect(aken, (70, 130, 180), (x, y, w, h))
+        tekst = font.render(kat, True, (255, 255, 255))
+        aken.blit(tekst, (x + 10, y + 10))
+
+# tulemuste kuvamine
+def kuva_tulemused():
+    aken.fill((0, 0, 0))
+    õige_tekst = font.render(f"Õigeid vastuseid: {õige_vastus}", True, (0, 255, 0))
+    vale_tekst = font.render(f"Valesid vastuseid: {vale_vastus}", True, (255, 0, 0))
+    aken.blit(õige_tekst, (200, 200))
+    aken.blit(vale_tekst, (200, 300))
+    pygame.display.flip()
+    pygame.time.delay(5000)  # 5 sekundit enne sulgemist
+
+
+# põhitsükkel
+pilt = None
+while running:
+    aken.fill((0, 0, 0))
+    sündmused = pygame.event.get()
+
+    for sündmus in sündmused:
+        if sündmus.type == pygame.QUIT:
+            running = False
+
+        if not mangu_algus:
+            # kategooria valimine hiireklõpsuga
+            if sündmus.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = sündmus.pos
+                for kat, x, y, w, h in nupud:
+                    if x <= mx <= x + w and y <= my <= y + h:
+                        praegune_kategooria = kat
+                        pilt = kuva_juhuslik_pilt()
+                        algusaeg = pygame.time.get_ticks()
+                        mangu_algus = True
+                        break
+        else:
+            if sündmus.type == pygame.KEYDOWN:
+                if sündmus.key == pygame.K_RETURN:
+                    if sisend.lower().strip() == praegune_nimi.lower():
+                        õige_vastus += 1
+                    else:
+                        vale_vastus += 1
+                    sisend = ""
+                    pilt = kuva_juhuslik_pilt()
+                elif sündmus.key == pygame.K_BACKSPACE:
+                    sisend = sisend[:-1]
+                else:
+                    sisend += sündmus.unicode
+
+    # kuvamine
+    if not mangu_algus:
+        pealkiri = font.render("Vali kategooria:", True, (255, 255, 255))
+        aken.blit(pealkiri, (50, 50))
+        joonista_nupud()
+    else:
+        if pilt:
+            aken.blit(pilt, (200, 100))
+        juhis = font.render("Kirjuta kuulsuse nimi ja vajuta Enter:", True, (255, 255, 255))
+        aken.blit(juhis, (50, 50))
+        sisend_tekst = font.render(sisend, True, (255, 255, 255))
+        aken.blit(sisend_tekst, (50, 550))
+
+        # timer
+        jäänud = max(0, 120 - (pygame.time.get_ticks() - algusaeg) // 1000)
+        timer_tekst = font.render(f"Aega jäänud: {jäänud}s", True, (255, 255, 0))
+        aken.blit(timer_tekst, (550, 50))
+
+        if jäänud <= 0:
+            running = False
+
+    pygame.display.flip()
+    clock.tick(30)
+
+kuva_tulemused()
+pygame.quit()
+sys.exit()
+
