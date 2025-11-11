@@ -1,9 +1,11 @@
-import random, json, os, pygame, sys, requests, io
+import random, json
+import os, pygame, sys, requests, io
 from PIL import Image
 
 # andmete avamine
-with open("andmed/nimed.json", "r", encoding="utf-8") as f:
-    andmed = json.load(f)
+f = open("andmed/nimed.json", "r", encoding="utf-8")
+andmed = json.load(f)
+f.close()
 
 # muutujad
 kategooriad = list(andmed.keys())
@@ -27,7 +29,8 @@ clock = pygame.time.Clock()
 
 # kategooriate nupud
 nupud = []
-for i, kat in enumerate(kategooriad): # võtab andmetest kategooriad
+for i, kat in enumerate(kategooriad):
+# võtab andmetest kategooriad, enumerate - nupude järjestus üksteise alla
     x = 50
     y = 100 + i * 60 # nuppudel 60 pikslit vahet
     w = 200
@@ -63,19 +66,21 @@ def joonista_nupud():
 
 # tulemuste kuvamine
 def kuva_tulemused():
-    aken.fill((0, 0, 0))
+    aken.fill((0, 0, 0)) # tausta värv
     õige_tekst = font.render(f"Õigeid vastuseid: {õige_vastus}", True, (0, 255, 0))
+    # muudab teksti pildiks (tekst, True - siledad ääred, False - teravad servad, värv)
     vale_tekst = font.render(f"Valesid vastuseid: {vale_vastus}", True, (255, 0, 0))
     aken.blit(õige_tekst, (200, 200))
+    # kuvab teksti ekraanile
     aken.blit(vale_tekst, (200, 300))
-    pygame.display.flip()
+    pygame.display.flip() # ekraani uuendatakse, pilt tuleb nähtavale
     pygame.time.delay(5000)  # 5 sekundit enne sulgemist
 
 
 # põhitsükkel
 pilt = None
 while running:
-    aken.fill((0, 0, 0))
+    aken.fill((0, 0, 0)) # tausta värv, muudame hiljem
     sündmused = pygame.event.get()
 
     for sündmus in sündmused:
