@@ -80,60 +80,60 @@ def kuva_tulemused():
 # põhitsükkel
 pilt = None
 while running:
-    aken.fill((0, 0, 0)) # tausta värv, muudame hiljem
-    sündmused = pygame.event.get()
+    aken.fill((0, 0, 0)) # ekraan mustaks
+    sündmused = pygame.event.get() #salvestab tegevused järjendisse
 
     for sündmus in sündmused:
-        if sündmus.type == pygame.QUIT:
+        if sündmus.type == pygame.QUIT: #mängu sulgemine
             running = False
 
-        if not mangu_algus:
-            # kategooria valimine hiireklõpsuga
-            if sündmus.type == pygame.MOUSEBUTTONDOWN:
-                mx, my = sündmus.pos
-                for kat, x, y, w, h in nupud:
-                    if x <= mx <= x + w and y <= my <= y + h:
-                        praegune_kategooria = kat
+        if not mangu_algus:# kontrollib et mäng pole alanud, valid kategooriat
+            if sündmus.type == pygame.MOUSEBUTTONDOWN: #kategooria valimine
+                mx, my = sündmus.pos #salvestab hiirekliki koordinaadid
+                for kat, x, y, w, h in nupud: #käib läbi kõikide kategooriat nupud
+                    if x <= mx <= x + w and y <= my <= y + h: #hiirekloikk nupu sees
+                        praegune_kategooria = kat #salvestab kategooria
                         pilt = kuva_juhuslik_pilt()
-                        algusaeg = pygame.time.get_ticks()
-                        mangu_algus = True
-                        break
-        else:
-            if sündmus.type == pygame.KEYDOWN:
-                if sündmus.key == pygame.K_RETURN:
+                        algusaeg = pygame.time.get_ticks() #salvestab mängu algusaja
+                        mangu_algus = True #mäng algas
+                        break #ülejäänud nuppe ei kontrolli
+        else: #kui mäng on alanud
+            if sündmus.type == pygame.KEYDOWN: #kas mõängija vajutas mingit klahvi
+                if sündmus.key == pygame.K_RETURN: #kui vajutati enter, siis vaatab vastuse üle
                     if sisend.lower().strip() == praegune_nimi.lower():
                         õige_vastus += 1
                     else:
-                        vale_vastus += 1
-                    sisend = ""
+                      
+                               vale_vastus += 1
+                    sisend = "" #kustutab eelmise vastuse, et saaks tulla uus pilt
                     pilt = kuva_juhuslik_pilt()
-                elif sündmus.key == pygame.K_BACKSPACE:
+                elif sündmus.key == pygame.K_BACKSPACE: #kustutab viimase tähe
                     sisend = sisend[:-1]
                 else:
-                    sisend += sündmus.unicode
+                    sisend += sündmus.unicode #sisendisse kirjutatakse kõik klaviatuuril vajutatavad tähed
 
     # kuvamine
     if not mangu_algus:
-        pealkiri = font.render("Vali kategooria:", True, (255, 255, 255))
-        aken.blit(pealkiri, (50, 50))
+        pealkiri = font.render("Vali kategooria:", True, (255, 255, 255)) #teeb pildi, et pygame saaks kuvada ekraanile
+        aken.blit(pealkiri, (50, 50)) #tektsi koordinaadid
         joonista_nupud()
-    else:
+    else: #mäng alanud
         if pilt:
-            aken.blit(pilt, (200, 100))
-        juhis = font.render("Kirjuta kuulsuse nimi ja vajuta Enter:", True, (255, 255, 255))
-        aken.blit(juhis, (50, 50))
-        sisend_tekst = font.render(sisend, True, (255, 255, 255))
-        aken.blit(sisend_tekst, (50, 550))
+            aken.blit(pilt, (200, 100)) #pildi koordinaadid
+        juhis = font.render("Kirjuta kuulsuse nimi ja vajuta Enter:", True, (255, 255, 255)) #käsk pildina ekraanil
+        aken.blit(juhis, (50, 50)) #koordinaadid
+        sisend_tekst = font.render(sisend, True, (255, 255, 255)) #pildina mängija sisend
+        aken.blit(sisend_tekst, (50, 550)) #koordinaadid
 
         # timer
-        jäänud = max(0, 120 - (pygame.time.get_ticks() - algusaeg) // 1000)
+        jäänud = max(0, 120 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
         timer_tekst = font.render(f"Aega jäänud: {jäänud}s", True, (255, 255, 0))
-        aken.blit(timer_tekst, (550, 50))
+        aken.blit(timer_tekst, (550, 50)) #Kollasena aeg
 
         if jäänud <= 0:
-            running = False
+            running = False #mäng läbi, kui aeg läbi
 
-    pygame.display.flip()
+    pygame.display.flip()#näitab asju, mida tsükliga läbisime
     clock.tick(30)
 
 kuva_tulemused()
