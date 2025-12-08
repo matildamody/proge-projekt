@@ -1,5 +1,5 @@
 {
-  "naitlejad": {
+  "Näitlejad": {
     "https://drive.google.com/uc?export=view&id=1lCceRgXiJpe7vdwy8Y5HDfKIQkS2lfAp": "Elmo Nüganen",
     "https://drive.google.com/uc?export=view&id=1-XD-yG0KdbfQekxXDKs2UnYsKgck10d2": "Priit Võigemast",
     "https://drive.google.com/uc?export=view&id=17SCjENxSUSX71p0iez8fWr116EufpIVF": "Märt Avandi",
@@ -11,7 +11,7 @@
     "https://drive.google.com/uc?export=view&id=1ckXEn5EToHzH3wzJAgJZwDaP3B6Z16Up": "Harriet Toompere",
     "https://drive.google.com/uc?export=view&id=19tBlA5s_3Gd8ohu2RdUJ0EMcy3NCnSyg": "Evelin Võigemast"
   },
-  "muusikud": {
+  "Muusikud": {
     "https://drive.google.com/uc?export=view&id=1YpkVNFnTZ7hnv3ulIzrMzFLcMM1yeRHe": "Nublu",
     "https://drive.google.com/uc?export=view&id=1Ad_qdUKkMWhUOedvE_JclUKY9JQ6Y_ax": "Getter Jaani",
     "https://drive.google.com/uc?export=view&id=11TcltUokWRd81GdmKtyAu8IklATqwW4y": "Lenna Kuurmaa",
@@ -23,7 +23,7 @@
     "https://drive.google.com/uc?export=view&id=1wtiQBoXwJ7o24w574h4Lq8j2zJ-W8sVt": "Ott Lepland",
     "https://drive.google.com/uc?export=view&id=1uzzGNAUP21u-VkuKFGdDD6kqZzl1hd1g": "Maarja-Liis Ilus"
   },
-  "poliitikud": {
+  "Poliitikud": {
     "https://drive.google.com/uc?export=view&id=1M5KfJ3QGVGDmieUFQ6U0J0H438id1srH": "Kaja Kallas",
     "https://drive.google.com/uc?export=view&id=1LaVRQL3E72EByBLgOk-90U9KsXl6-jt8": "Alar Karis",
     "https://drive.google.com/uc?export=view&id=12n5X5msbbLtUMK7VL_XZRs6stNRBH8aO": "Kristina Kallas",
@@ -33,8 +33,12 @@
     "https://drive.google.com/uc?export=view&id=1T6DMMi_UnMyyfKxpQuJ4H-IV8iyE6u9x": "Heidy Purga",
     "https://drive.google.com/uc?export=view&id=1md8q4uOiXn0B6ZUezt1gHnUaNbrakgJD": "Andres Sutt",
     "https://drive.google.com/uc?export=view&id=1-PGQXy6yfiLTP-bQBkR78dz5oLX3lQ2Z": "Jürgen Ligi",
-    "https://drive.usercontent.google.com/download?id=1QN-PhZ0YbqcJcOaCATMVKFS_Wd4clLU-&export=view&authuser=0": "Margus Tsahkna"
-
+    "https://drive.usercontent.google.com/download?id=1QN-PhZ0YbqcJcOaCATMVKFS_Wd4clLU-&export=view&authuser=0": "Margus Tsahkna",
+    "https://drive.google.com/uc?export=view&id=1qSl8-OcT8_ndrtsct5ZnhSSQklJXsUnE": "Erkki Keldo",
+    "https://drive.google.com/uc?export=view&id=1HJrG5yIBcgnAYq31dfyniFPKCv0rVbMm": "Hendrik Johannes Terras",
+    "https://drive.google.com/uc?export=view&id=12ctLa5enIYTHjUutt6aENXRkH2vkNBl5": "Igor Taro",
+    "https://drive.google.com/uc?export=view&id=1IG8Hxrifusp0h_l8BpDQzwu8U1F4JPJS": "Karmen Joller",
+    "https://drive.google.com/uc?export=view&id=11xwO56B0b3xTYknBDRlhW_H8hEHKdz_C": "Kuldar Leis"
     
   }
 }
