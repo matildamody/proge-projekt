@@ -157,7 +157,7 @@ while running:
         aken.blit(sisend_tekst, (50, 550)) #koordinaadid
 
         # timer
-        jäänud = max(0, 120 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
+        jäänud = max(0, 90 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
         timer_tekst = font.render(f"Aega jäänud: {jäänud}s", True, (0, 0, 0))
         aken.blit(timer_tekst, (550, 50)) #Kollasena aeg
 
