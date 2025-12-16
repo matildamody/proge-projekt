@@ -1,6 +1,6 @@
 # töö nimi: "Kuulsuste äraarvamismäng"
 # Kadri-Liis Alber, Matilda Manju Mody
-# käivitusjuhend: Terminal, installi Pygame'i, kirjuta käsuviibale python3 manin.py
+# käivitusjuhend: Terminal, installi Pygame'i, kirjuta käsuviibale python3 main.py
 
 import random, json #aitab lugeda json andmeid
 import os, pygame, sys, requests, io
@@ -11,7 +11,7 @@ import os, pygame, sys, requests, io
 from PIL import Image
 # PIL - aitab pilte töödelda (avada, salvestada jne)
 # andmete avamine
-f = open("andmed/nimed.json", "r", encoding="utf-8")
+f = open("nimed.json", "r", encoding="utf-8")
 andmed = json.load(f)
 f.close()
 
@@ -44,26 +44,46 @@ for i, kat in enumerate(kategooriad):
     w = 200
     h = 50
     nupud.append((kat, x, y, w, h))
+pildid_järjendis = []  # kategooria pildid juhuslikus järjekorras
+pildi_indeks = 0
+pildid_mälus = {}
+def laadi_pildid(kategooria):
+    global pildid_mälus
+    pildid_mälus[kategooria] = [] #salvestab kõik selle kategooria pildid
+    for fail in andmed[kategooria].keys():
+        try:
+            response = requests.get(fail)#laeb pilte alla internetist
+            image_bytes = io.BytesIO(response.content)
+            pil_img = Image.open(image_bytes).convert("RGB")
+            pil_img = pil_img.resize((400, 400))
+            mode = pil_img.mode
+            size = pil_img.size
+            data = pil_img.tobytes()
+            pilt = pygame.image.fromstring(data, size, mode)
+            pildid_mälus[kategooria].append(pilt)#pilte ei pea uuesti internetist laadima, vahetuvad kiiremini
+        except Exception as e:
+            print("Pildi laadimine ebaõnnestus:", e)
+
+# Funktsioon mängu alustamiseks, segab pildid ja alustab indeksiga 0
+def alusta_mangu(kategooria):
+    global pildid_järjendis, pildi_indeks
+    if kategooria not in pildid_mälus: #kontrollib, kas pildid mälus olemas
+        laadi_pildid(kategooria)
+    pildid_järjendis = list(range(len(pildid_mälus[kategooria])))#loob indeksite järjendi, piltide arvu järgi
+    random.shuffle(pildid_järjendis)#piltide indeksid suvalises järjekorras
+    pildi_indeks = 0
 
 
-def kuva_juhuslik_pilt():
-    # valib juhusliku pildi valitd (aktiivsest) kategooriast ja tagastab pildina
-    global praegune_fail, praegune_nimi # global - muutujad kasutusel üle kogu programmi
-    praegune_fail = random.choice(list(andmed[praegune_kategooria].keys())) # valib juhusliku faili
-    praegune_nimi = andmed[praegune_kategooria][praegune_fail] # leiab selle pildi õige nime
-
-    # pildi laadimine internetist, sest meil URL-id 
-    try:
-        response = requests.get(praegune_fail) # teeb päringu URL-lingile
-        image_bytes = io.BytesIO(response.content) # pildibaidid -> "virtuaalne fail" - saab lugeda nagu tavalist faili
-        pil_img = Image.open(image_bytes).convert("RGB") # muudab pildi RGB formaati (värvid õiged)
-        pil_img = pil_img.resize((400, 400)) # muudab pildi suurust (pikslit)
-        pil_img.save("temp.jpg")  # ajutine fail pygame'i jaoks
-        pilt = pygame.image.load("temp.jpg") # salvestatud pilt laetakse pygame'i ekraanile
-        return pilt 
-    except Exception as e: # ebaõnnestumine
-        print("Pildi laadimine ebaõnnestus:", e)
-        return None
+def kuva_järgmine_pilt():
+    global praegune_fail, praegune_nimi, pildi_indeks
+    if pildi_indeks >= len(pildid_järjendis):
+        return None  # kõik pildid näidatud, mäng läbi
+    indeks = pildid_järjendis[pildi_indeks]
+    praegune_fail = list(andmed[praegune_kategooria].keys())[indeks]#salvestab url-i, et vastust kontrollida 
+    praegune_nimi = andmed[praegune_kategooria][praegune_fail]#salvestab õige nime
+    pilt = pildid_mälus[praegune_kategooria][indeks]#võtab mälust pildi ja kuvab
+    pildi_indeks += 1 # et järgmine kord tuleks uus pilt
+    return pilt
 
 # kategooriate nuppude kuvamine
 def joonista_nupud():
@@ -71,7 +91,14 @@ def joonista_nupud():
         pygame.draw.rect(aken, (70, 130, 180), (x, y, w, h)) # joonistab ristküliku
         tekst = font.render(kat, True, (0, 0, 0)) # kategooria nimi muudetakse tekstiks
         aken.blit(tekst, (x + 10, y + 10)) # joonistab teksti nupu peale
-
+def kuva_tulemused():
+    aken.fill((0, 0, 0))
+    õige_tekst = font.render(f"Õigeid vastuseid: {õige_vastus}", True, (0, 255, 0))
+    vale_tekst = font.render(f"Valesid vastuseid: {vale_vastus}", True, (255, 0, 0))
+    aken.blit(õige_tekst, (200, 200))
+    aken.blit(vale_tekst, (200, 300))
+    pygame.display.flip()
+    pygame.time.wait(10000)  # näitab 10 sekundit
 # põhitsükkel
 pilt = None
 while running:
@@ -88,7 +115,8 @@ while running:
                 for kat, x, y, w, h in nupud: #käib läbi kõikide kategooriat nupud
                     if x <= mx <= x + w and y <= my <= y + h: #hiirekloikk nupu sees
                         praegune_kategooria = kat #salvestab kategooria
-                        pilt = kuva_juhuslik_pilt()
+                        alusta_mangu(kat) 
+                        pilt = kuva_järgmine_pilt()
                         algusaeg = pygame.time.get_ticks() #salvestab mängu algusaja
                         mangu_algus = True #mäng algas
                         break #ülejäänud nuppe ei kontrolli
@@ -98,14 +126,22 @@ while running:
                     if sisend.lower().strip() == praegune_nimi.lower():
                         õige_vastus += 1
                     else:
-                      
-                               vale_vastus += 1
+                        vale_vastus += 1
                     sisend = "" #kustutab eelmise vastuse, et saaks tulla uus pilt
-                    pilt = kuva_juhuslik_pilt()
+                    pilt = kuva_järgmine_pilt()
                 elif sündmus.key == pygame.K_BACKSPACE: #kustutab viimase tähe
                     sisend = sisend[:-1]
-                else:
+                elif sündmus.unicode.isprintable():
                     sisend += sündmus.unicode #sisendisse kirjutatakse kõik klaviatuuril vajutatavad tähed
+
+            elif sündmus.type == pygame.MOUSEBUTTONDOWN:
+                # liigu järgmisele pildile hiireklikkides
+                pilt = kuva_järgmine_pilt()
+                sisend = ""
+
+            if pilt is None:
+                running = False  # kõik pildid näidatud
+ 
 
     # kuvamine
     if not mangu_algus:
@@ -121,7 +157,7 @@ while running:
         aken.blit(sisend_tekst, (50, 550)) #koordinaadid
 
         # timer
-        jäänud = max(0, 120 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
+        jäänud = max(0, 90 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
         timer_tekst = font.render(f"Aega jäänud: {jäänud}s", True, (0, 0, 0))
         aken.blit(timer_tekst, (550, 50)) #Kollasena aeg
 
@@ -130,6 +166,7 @@ while running:
 
     pygame.display.flip()#näitab asju, mida tsükliga läbisime
     clock.tick(30)
+
 
 kuva_tulemused()
 pygame.quit()
