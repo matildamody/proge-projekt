@@ -33,7 +33,7 @@ aken = pygame.display.set_mode((800, 600)) # loob mänguakna, suurus
 pygame.display.set_caption("Eesti kuulsuste äraarvamismäng") # akna pealkiri, ülemisel ribal
 font = pygame.font.SysFont("Arial", 30) # teksti font
 väike_font = pygame.font.SysFont("Arial", 20) # teksti 2.font
-clock = pygame.time.Clock() # hoiab mängu kiirust ühtlasena
+kell = pygame.time.Clock() # hoiab mängu kiirust ühtlasena
 
 # kategooriate nupud
 nupud = []
@@ -52,16 +52,16 @@ def laadi_pildid(kategooria):
     pildid_mälus[kategooria] = [] #salvestab kõik selle kategooria pildid
     for fail in andmed[kategooria].keys():
         try:
-            response = requests.get(fail)#laeb pilte alla internetist
-            image_bytes = io.BytesIO(response.content)
-            pil_img = Image.open(image_bytes).convert("RGB")
-            pil_img = pil_img.resize((400, 400))
-            mode = pil_img.mode
-            size = pil_img.size
-            data = pil_img.tobytes()
-            pilt = pygame.image.fromstring(data, size, mode)
+            vastus = requests.get(fail)#laeb pilte alla internetist
+            pildi_andmed = io.BytesIO(vastus.content)
+            algne_pilt = Image.open(pildi_andmed).convert("RGB")#avab pildi
+            algne_pilt = algne_pilt.resize((400, 400))
+            vorming = algne_pilt.mode
+            suurus = algne_pilt.size
+            baidid = algne_pilt.tobytes()
+            pilt = pygame.image.fromstring(baidid, suurus, vorming)#loob Pygame pildi
             pildid_mälus[kategooria].append(pilt)#pilte ei pea uuesti internetist laadima, vahetuvad kiiremini
-        except Exception as e:
+        except Exception as e:#kui mingi URL ei tööta, siis veateade ja jätkab järgmise pildiga
             print("Pildi laadimine ebaõnnestus:", e)
 
 # Funktsioon mängu alustamiseks, segab pildid ja alustab indeksiga 0
@@ -113,7 +113,7 @@ while running:
             if sündmus.type == pygame.MOUSEBUTTONDOWN: #kategooria valimine
                 mx, my = sündmus.pos #salvestab hiirekliki koordinaadid
                 for kat, x, y, w, h in nupud: #käib läbi kõikide kategooriat nupud
-                    if x <= mx <= x + w and y <= my <= y + h: #hiirekloikk nupu sees
+                    if x <= mx <= x + w and y <= my <= y + h: #hiireklikk nupu sees
                         praegune_kategooria = kat #salvestab kategooria
                         alusta_mangu(kat) 
                         pilt = kuva_järgmine_pilt()
@@ -135,7 +135,7 @@ while running:
                     sisend += sündmus.unicode #sisendisse kirjutatakse kõik klaviatuuril vajutatavad tähed
 
             elif sündmus.type == pygame.MOUSEBUTTONDOWN:
-                # liigu järgmisele pildile hiireklikkides
+                #kustutab mängija eelmise sisendi
                 pilt = kuva_järgmine_pilt()
                 sisend = ""
 
@@ -159,13 +159,13 @@ while running:
         # timer
         jäänud = max(0, 90 - (pygame.time.get_ticks() - algusaeg) // 1000) #pygame.time.get_ticks() mitu millisekundit möödunud käivitamisest
         timer_tekst = font.render(f"Aega jäänud: {jäänud}s", True, (0, 0, 0))
-        aken.blit(timer_tekst, (550, 50)) #Kollasena aeg
+        aken.blit(timer_tekst, (550, 50)) #aeg paremal nurgas
 
         if jäänud <= 0:
             running = False #mäng läbi, kui aeg läbi
 
     pygame.display.flip()#näitab asju, mida tsükliga läbisime
-    clock.tick(30)
+    kell.tick(30) #et mäng oleks sujuv, sõltumata arvutist
 
 
 kuva_tulemused()
