@@ -1,6 +1,6 @@
 # töö nimi: "Kuulsuste äraarvamismäng"
 # Kadri-Liis Alber, Matilda Manju Mody
-# käivitusjuhend: Terminal, installi Pygame'i, kirjuta käsuviibale python3 main.py
+# käivitusjuhend: Terminal, installi Pygame, requests, pillow, kirjuta käsuviibale python3 main.py
 
 import random, json #aitab lugeda json andmeid
 import os, pygame, sys, requests, io
