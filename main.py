@@ -92,9 +92,9 @@ def joonista_nupud():
         tekst = font.render(kat, True, (0, 0, 0)) # kategooria nimi muudetakse tekstiks
         aken.blit(tekst, (x + 10, y + 10)) # joonistab teksti nupu peale
 def kuva_tulemused():
-    aken.fill((0, 0, 0))
-    õige_tekst = font.render(f"Õigeid vastuseid: {õige_vastus}", True, (0, 255, 0))
-    vale_tekst = font.render(f"Valesid vastuseid: {vale_vastus}", True, (255, 0, 0))
+    aken.fill(((255, 255, 255)))
+    õige_tekst = font.render(f"Õigeid vastuseid: {õige_vastus}", True, (0, 0, 0))
+    vale_tekst = font.render(f"Valesid vastuseid: {vale_vastus}", True, (0, 0, 0))
     aken.blit(õige_tekst, (200, 200))
     aken.blit(vale_tekst, (200, 300))
     pygame.display.flip()
@@ -102,7 +102,7 @@ def kuva_tulemused():
 # põhitsükkel
 pilt = None
 while running:
-    aken.fill((255, 255, 255)) # ekraan mustaks
+    aken.fill((255, 255, 255)) # ekraan valgeks
     sündmused = pygame.event.get() #salvestab tegevused järjendisse
 
     for sündmus in sündmused:
@@ -151,7 +151,7 @@ while running:
     else: #mäng alanud
         if pilt:
             aken.blit(pilt, (200, 100)) #pildi koordinaadid
-        juhis = font.render("Kirjuta kuulsuse nimi ja vajuta Enter:", True, (255, 255, 255)) #käsk pildina ekraanil
+        juhis = font.render("Kirjuta kuulsuse nimi ja vajuta Enter:", True, (0, 0, 0)) #käsk pildina ekraanil
         aken.blit(juhis, (50, 50)) #koordinaadid
         sisend_tekst = font.render(sisend, True, (0, 0, 0)) #pildina mängija sisend
         aken.blit(sisend_tekst, (50, 550)) #koordinaadid
